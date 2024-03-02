@@ -1,7 +1,122 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Next Step Activity</title>
+
+    <!-- JQuery version: 3.4.1 -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script data-main="js/main.js" src="js/require.js"></script>
+    <link rel="stylesheet" href="https://www.lightningdesignsystem.com/_next/static/style.css"> 
+    
+    <!--Styles-->
+    <style type="text/css">
+        body {
+            padding: 20px;
+            margin: 0;
+            color: #3e3e3c;
+            font-family: "Salesforce Sans", Arial, sans-serif;
+        }
+        .step {
+            display: none;
+        }
+        #step1 {
+            display: block;
+        }
+        
+        .glo-checkbox{
+            display: inline-flex;
+        }
+        
+        .glo-input {
+            margin: 10px 0;
+        }
+
+        .glo-input select,
+        .glo-input input {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #dddbda;
+            border-radius: 5px;
+            font-weight: 400;
+        }
+        
+        .glo-input select:active, .glo-input select:focus,
+        .glo-input input:active, .glo-input input:focus {
+            outline: 0;
+            border-color: #1589ee;
+            background-color: white;
+            box-shadow: 0 0 3px #0070D2;
+        }
+        
+        .glo-input label {
+            line-height: 2.5rem;
+        }
+        .glo-input textarea,input {
+            display: block;
+        }
+        .glo-placeholder-list {
+            color: gray;
+        }
+        .glo-input-form {
+            display: inline-block;
+        }
+        #glo-data-extension-warning{
+            padding: 0.75rem;
+            margin-top:0.5rem;
+            margin-bottom:0.5rem;
+            width: auto;
+            color: #080707;
+            background-color: #f3f2f2;
+        }
+
+        #glo-next-step-parameter{
+            width:200px;
+        }
+        #glo-api-event-parameter{
+            width: 350px;
+        }
+    </style>
+
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages. Livia teste</p>
+<div class="slds-spinner_container" id="glo-loader">
+    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+      <span class="slds-assistive-text">Loading</span>
+      <div class="slds-spinner__dot-a"></div>
+      <div class="slds-spinner__dot-b"></div>
+    </div>
+</div>
+<div id="step1" class="step">
+    <div id="glo-data-extension-warning"><span>Data extension not detected. Please configure the data extension before configuring activity.</span></div>
+
+    <form id="glo-nextStep-form">
+        <fieldset>       
+            <div class="glo-input">
+                Select your Client type:
+                <select id="glo-clientType-parameter">
+                    <option value="">Select an option</option>
+                    <option value="Contacto">Persona</option>
+                    <option value="Cuenta">Empresa</option>
+                </select>
+            </div>
+
+            <div class="glo-input">
+                <label for="glo-next-step-parameter">Insert DE name next Journey</label>
+                <input id="glo-next-step-parameter" name="glo-next-step-parameter" type="text"></input>
+            </div>
+
+            <div class="glo-input">
+                <label for="glo-api-event-parameter">Insert API Event next Journey</label>
+                <input id="glo-api-event-parameter" name="glo-api-event-parameter" type="text"></input>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div id="step2" class="step">
+    <h3>Setup complete!</h3>
+</div>
 </body>
 </html>

@@ -1,0 +1,54 @@
+{
+    "workflowApiVersion": "1.1",
+    "metaData": {
+      "version": "1.1",
+      "icon": "http://image.banca.santander.cl/lib/fe311571756404787c1c76/m/1/dfb92910-2145-400f-80fe-530a7649b3ce.png",
+      "iconSmall": "http://image.banca.santander.cl/lib/fe311571756404787c1c76/m/1/dfb92910-2145-400f-80fe-530a7649b3ce.png",
+      "category": "flow"
+    },
+    "type": "REST",
+    "lang": {
+       "en-US": {
+           "name": "[HOM] Next Step",
+           "description": "Insert contact in next Journey, according Business Rules"
+       }
+    },
+    "arguments": {
+        "execute": {
+            "inArguments": [],
+            "outArguments": [],
+            "url": "https://cloud.banca.santander.cl/dev-nextStepExecute?action=execute"
+        }
+    },
+    "configurationArguments": {       
+       "save": {
+           "url": "https://cloud.banca.santander.cl/dev-nextStepExecute?action=save"
+       },
+       "publish": {
+           "url": "https://cloud.banca.santander.cl/dev-nextStepExecute?action=publish"
+       },
+       "validate": {
+           "url": "https://cloud.banca.santander.cl/dev-nextStepExecute?action=validate"
+       },
+       "stop": {
+           "url": "https://cloud.banca.santander.cl/dev-nextStepExecute?action=stop"
+       }
+    },
+    "wizardSteps": [
+       { "label": "SETUP NEXT STEP", "key": "step1" },
+       { "label": "DONE", "key": "step2" }
+    ],
+    "userInterfaces": {
+       "configInspector": {
+          "size": "medium"
+       }
+    },
+    "schema": {
+        "arguments": {
+            "execute": {
+                "inArguments": [],
+                "outArguments": []
+            }
+        }
+    }
+}
