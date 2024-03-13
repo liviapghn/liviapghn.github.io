@@ -1,0 +1,98 @@
+{
+    "workflowApiVersion": "1.1",
+    "metaData": {
+      "version": "1.1",
+      "icon": "img/icon.png",
+      "category": "message"
+    },
+    "type": "REST",
+    "lang": {
+       "en-US": {
+           "name": "[TEST] Insider WhatsApp",
+           "description": "Send WhatsApp by Insider API"
+       }
+    },
+    "arguments": {
+        "execute": {
+            "inArguments": [
+                {
+                    "templateMessage": "{{Interaction.templateMessage}}",
+                    "phone": "{{Interaction.phone}}",
+                    "from": "{{Interaction.from}}",
+                    "lista": "{{Interaction.lista}}"
+                  }
+            ],
+            "outArguments": [],     
+            "url": "https://liviapghn.github.io//execute",
+            "verb": "POST",
+            "format": "json",
+            "useJwt": true
+        }
+    },
+    "configurationArguments": {       
+       "save": {
+           "url": "https://liviapghn.github.io/save",
+           "verb": "POST",
+           "useJwt": true
+       },
+       "publish": {
+           "url": "https://liviapghn.github.io/publish",
+           "verb": "POST",
+           "useJwt": true
+       },
+       "validate": {
+           "url": "https://liviapghn.github.io/validate",
+           "verb": "POST",
+           "useJwt": true
+       },
+       "stop": {
+           "url": "https://liviapghn.github.io/stop",
+           "verb": "POST",
+           "useJwt": true
+       }
+    },
+    "userInterfaces": {
+       "configModal": {
+           "height": 1000,
+           "width": 1200,
+           "fullscreen": false
+       }
+    },
+    "schema": {
+        "arguments": {
+            "execute": {
+                "inArguments": [
+                    {
+                        "templateMessage": {
+                          "dataType": "Text",
+                          "isNullable": false,
+                          "direction": "In"
+                        }
+                      },
+                      {
+                        "phone": {
+                          "dataType": "Text",
+                          "isNullable": false,
+                          "direction": "In"
+                        }
+                      },
+                      {
+                        "from": {
+                          "dataType": "Text",
+                          "isNullable": false,
+                          "direction": "In"
+                        }
+                      },
+                       {
+                        "lista": {
+                          "dataType": "Text",
+                          "isNullable": false,
+                          "direction": "In"
+                        }
+                      }
+                ],
+                "outArguments": []
+            }
+        }
+    }
+}

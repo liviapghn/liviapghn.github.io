@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Enviar HSM via HiPlatform</title>
+
+  <!-- JQuery version: 3.4.1 -->
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script data-main="js/main.js" src="js/require.js"></script>    
+  <!--Styles-->
+  <link rel="stylesheet" href="css/style.css"> 
+  <style type="text/css">
+      body {
+          padding: 20px;
+          margin: 0;
+          color: #3e3e3c;
+          font-family: "Salesforce Sans", Arial, sans-serif;
+      }
+      .glo-loader {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 100vh;
+          background-color: rgba(255, 255, 255, .65);
+          z-index: 2;
+      }
+
+      .glo-loader > .loader-icon {
+          height: 64px;
+          font-size: 64px;
+          position: absolute;
+          width: 64px;
+          background-size: contain;
+          left: calc(100vw/2 - 32px);
+          top: calc(100vh/2 - 32px);
+      }
+
+      .step {
+          display: none;
+      }
+      #step1 {
+          display: block;
+      }
+      
+      .glo-placeholder {            
+        color: gray;
+      }
+
+      .glo-placeholderdep {            
+        color: gray;
+      }
+
+      .grid{
+        display: grid;
+        grid-gap: 5px;        
+      }
+
+      #step1 .grid{
+        grid-template-columns: 35% auto;
+      }
+
+      #step2 .grid{
+        grid-template-columns: 35% auto;
+      }
+
+      .glo-placeholder-list {
+        display: grid;
+        grid-gap: 16px;
+        grid-template-columns: auto auto;
+      }
+
+      .glo-placeholderdep-listext {
+        display: grid;
+        grid-gap: 16px;
+        grid-template-columns: auto auto;
+      }
+
+      .glo-placeholderdep-list {
+        display: grid;
+        grid-gap: 16px;
+        grid-template-columns: auto auto;
+      }
+
+      .glo-input-form {
+          display: inline-block;
+      }
+
+      #glo-DEDependentes-parameter{
+           width:200px;
+      }
+      
+      #glo-DEDependentesExternalKey-parameter{
+          width: 350px;
+      }
+  </style>
+
+</head>
+<body>
+  <div class="slds-spinner_container" id="glo-loader">
+    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+      <span class="slds-assistive-text">Loading</span>
+      <div class="slds-spinner__dot-a"></div>
+      <div class="slds-spinner__dot-b"></div>
+    </div>
+  </div>
+  <div id="step1" class="step">
+    <div id="glo-data-extension-warning" class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_large" role="alert">
+      <span class="slds-assistive-text">error</span>
+      <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Data extension not detected.">
+        <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+        <use xlink:href="/svg/symbols.svg#error"></use>
+        </svg>
+      </span>
+      <h2>Data extension not detected. Please configure the data extension before configuring activity.
+      </h2>
+    </div>   
+
+    <form id="glo-send-test-sms-form">
+      <article class="slds-card">
+        <div class="slds-card__body slds-card__body_inner grid"> 
+          <div class="slds-form grid-item">
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-targetSystem-parameter">Destino da mensagem:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-targetSystem-parameter" class="slds-input slds-combobox__input">
+                </select>
+              </div>
+            </div>
+      
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-program-parameter">Namespace:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-program-parameter" class="slds-input slds-combobox__input">
+                </select>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-subprogram-parameter">ElementName:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-subprogram-parameter" class="slds-input slds-combobox__input">
+                </select>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-clientType-parameter">Tipo de Cliente:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-clientType-parameter" class="slds-input slds-combobox__input">
+                </select>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-image-parameter">HSM possui imagem:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-image-parameter" class="slds-input slds-combobox__input">
+                    <option value="">Selecione a opção</option>
+                    <option value="True">Sim</option>
+                    <option value="False">Não</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked" id="glo-ImageLink-parameter">
+              <label class="slds-form-element__label" for="glo-ImageLink-parameter">Link da imagem</label>
+              <div class="slds-form-element__control">
+                <textarea id="glo-ImageLink-parameter" placeholder="URL da imagem" 
+                  class="slds-textarea" name="ImageLink-parameter"  rows="1" cols="10"></textarea>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-dependentes-parameter">Possui informações de dependente:</label>
+              <div class="slds-form-element__control">
+                <select id="glo-dependentes-parameter" class="slds-input slds-combobox__input">
+                    <option value="">Selecione a opção</option>
+                    <option value="True">Sim</option>
+                    <option value="False">Não</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_stacked" id="glo-DEDependente-parameter">
+              <label class="slds-form-element__label" for="glo-DEDependente-parameter">DE dados dependentes</label>
+              <div class="slds-form-element__control">
+                <textarea id="glo-DEDependente-parameter" placeholder="Data Extension" 
+                  class="slds-textarea" name="DEDependente-parameter"  rows="1" cols="10"></textarea>
+              </div>
+            </div>
+
+            <div class="grid-item">
+            <div class="slds-form-element slds-form-element_stacked" id="glo-DEDependenteExternalKey-parameter">
+              <label class="slds-form-element__label" for="glo-DEDependenteExternalKey-parameter">External Key DE dados dependentes</label>
+              <div class="slds-form-element__control">
+                <textarea id="glo-DEDependenteExternalKey-parameter" placeholder="External Key" 
+                  class="slds-textarea" name="DEDependenteExternalKey-parameterr"  rows="1" cols="10"></textarea>
+              </div>
+            </div>
+            </div>
+       
+          </div>           
+          
+          <div class="slds-form grid-item" id="glo-parameter_container"></div>           
+        </div>           
+      </article>
+    </form>
+  </div>
+
+  <div id="step2" class="step">
+    <form id="glo-send-test-sms-form">
+      <article class="slds-card">
+
+        <div class="slds-card__body slds-card__body_inner grid">
+          <div class="grid-item">
+            <div class="glo-placeholder">
+              <span>Variavéis suportadas:</span>
+              <div id="glo-placeholder-list" class="glo-placeholder-list"></div>
+            </div>
+
+            <div class="glo-placeholderdep" id="glo-placeholderdep-listext">
+              <hr style="width:50%;text-align:left;margin-left:0">
+              <span>Variavéis para dependentes suportadas:</span>
+              <div id="glo-placeholderdep-list" class="glo-placeholderdep-list"></div>
+            </div>
+          </div>          
+
+          <div class="grid-item">            
+            <div class="slds-form-element slds-form-element_stacked">
+              <label class="slds-form-element__label" for="glo-message-template-input">HSM Variavéis do Titular (Colocar na mesma ordem em que aparecem  na mensagem)</label>
+              <div class="slds-form-element__control">
+                <textarea id="glo-message-template-input" placeholder="Variavéis da mensagem" 
+                  class="slds-textarea" name="message-template"  rows="10" cols="60"></textarea>
+              </div>
+            </div>
+
+            <div class="grid-item">            
+            <div class="slds-form-element slds-form-element_stacked" id="glo-script-template-input">
+              <label class="slds-form-element__label" for="glo-script-template-input">HSM Variavéis dos Dependentes (Colocar na mesma ordem em que aparecem  na mensagem)</label>
+              <div class="slds-form-element__control">
+                <textarea id="glo-script-template-input" placeholder="Variavéis para dependentes" 
+                  class="slds-textarea" name="script-template"  rows="10" cols="60"></textarea>
+              </div>
+            </div>
+
+          </div>            
+        </div>    
+      </article>
+    </form>
+  </div>
+
+  <div id="step3" class="step">
+    <h3>Setup complete!</h3>
+  </div>
+</body>
+</html>
