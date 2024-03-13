@@ -1,259 +1,518 @@
 <!DOCTYPE html>
+<html>
 
-<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Enviar HSM via HiPlatform</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenvia RCS Custom Activity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- JQuery version: 3.4.1 -->
-  <script type="text/javascript" src="js/jquery.min.js"></script>
-  <script data-main="js/main.js" src="js/require.js"></script>    
-  <!--Styles-->
-  <link rel="stylesheet" href="css/style.css"> 
-  <style type="text/css">
-      body {
-          padding: 20px;
-          margin: 0;
-          color: #3e3e3c;
-          font-family: "Salesforce Sans", Arial, sans-serif;
-      }
-      .glo-loader {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          height: 100vh;
-          background-color: rgba(255, 255, 255, .65);
-          z-index: 2;
-      }
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-      .glo-loader > .loader-icon {
-          height: 64px;
-          font-size: 64px;
-          position: absolute;
-          width: 64px;
-          background-size: contain;
-          left: calc(100vw/2 - 32px);
-          top: calc(100vh/2 - 32px);
-      }
+        .container {
+            flex: 1;
+        }
 
-      .step {
-          display: none;
-      }
-      #step1 {
-          display: block;
-      }
-      
-      .glo-placeholder {            
-        color: gray;
-      }
+        .close-btn {
+            font-size: 30px;
+            font-weight: bold;
+            color: #c0c0c0;
+            cursor: pointer;
+        }
 
-      .glo-placeholderdep {            
-        color: gray;
-      }
-
-      .grid{
-        display: grid;
-        grid-gap: 5px;        
-      }
-
-      #step1 .grid{
-        grid-template-columns: 35% auto;
-      }
-
-      #step2 .grid{
-        grid-template-columns: 35% auto;
-      }
-
-      .glo-placeholder-list {
-        display: grid;
-        grid-gap: 16px;
-        grid-template-columns: auto auto;
-      }
-
-      .glo-placeholderdep-listext {
-        display: grid;
-        grid-gap: 16px;
-        grid-template-columns: auto auto;
-      }
-
-      .glo-placeholderdep-list {
-        display: grid;
-        grid-gap: 16px;
-        grid-template-columns: auto auto;
-      }
-
-      .glo-input-form {
-          display: inline-block;
-      }
-
-      #glo-DEDependentes-parameter{
-           width:200px;
-      }
-      
-      #glo-DEDependentesExternalKey-parameter{
-          width: 350px;
-      }
-  </style>
-
+        .close-btn:focus,
+        .close-btn:hover {
+            opacity: 1;
+            color: #000;
+        }
+    </style>
 </head>
-<body>
-  <div class="slds-spinner_container" id="glo-loader">
-    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
-      <span class="slds-assistive-text">Loading</span>
-      <div class="slds-spinner__dot-a"></div>
-      <div class="slds-spinner__dot-b"></div>
+
+<body class="bg-light">
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="row w-100">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <h2 class="card-title">Custom Activity - Insider WhatsApp</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <form action="">
+
+                            <div class="mb-3">
+                                <label for="messageTemplate" class="form-label">Message Template:</label>
+                                <select id="messageTemplate" class="form-select"></select>
+                            </div>
+
+                            <div class="mb-3">
+                              <label for="phone" class="form-label">Coluna com Telefone:</label>
+                              <select id="phone" class="form-select"></select>
+                            </div>
+
+                            <div id="Basic" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="variableDropdown" class="form-label">Variaveis:</label>
+                                    <select id="variableDropdown" class="form-select"></select>
+                                    <button id="insertVariableButton" type="button" class="btn btn-primary mt-2">Inserir
+                                        Variavel</button>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="rcsMessage" class="form-label">RCS Message:</label>
+                                    <textarea id="rcsMessage" class="form-control" rows="6"></textarea>
+                                    <div id="charCounter" class="form-text">0/1000</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="text-warning">After configuring the fields, click on 'Save' before
+                                        clicking on 'Done'.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <button id="saveButton" type="button" class="btn btn-primary">Save</button>
+                                </div>
+                            </div>
+
+                            <!-- SINGLE -->
+                            <div id="Single" style="display: none;">
+                                <!-- Message Type -->
+                                <div class="mb-3">
+                                    <p>Message type:</p>
+                                    <input class="form-check-input" type="radio" id="SimpleText"
+                                        onchange="radiofunction()" name="Message_Type" class="Message_Type"
+                                        value="SimpleText">
+                                    <label for="SimpleText"> Simple Text</label><br>
+                                    <input class="form-check-input" type="radio" id="RichCard"
+                                        onchange="radiofunction()" name="Message_Type" class="Message_Type"
+                                        value="RichCard">
+                                    <label for="RichCard"> Rich Card</label><br>
+                                </div>
+
+                                <!-- Simple Text -->
+                                <div id="SimpleTextDiv" style="display: none;">
+                                    <div class="mb-3">
+                                        <label for="variableDropdown" class="form-label">Insert Variable:</label>
+                                        <select id="variableDropdown" class="form-select"></select>
+                                        <button id="insertVariableButton" type="button"
+                                            class="btn btn-primary mt-2">Insert Variable</button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="rcsMessage" class="form-label">RCS Message:</label>
+                                        <textarea id="rcsMessage" class="form-control" rows="6"></textarea>
+                                        <div id="charCounter" class="form-text">0/1000</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="text-warning">After configuring the fields, click on 'Save' before
+                                            clicking on 'Done'.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <button id="saveButton" type="button" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                                <div id="carousel"></div>
+                                <!-- Insert Card -->
+
+                                <div class="mb-3" id="adcionar_var_rich" style="display: none;">
+                                    <div class="mb-3">
+                                    <label for="variableDropdownGeral" class="form-label">Insert Variable: </label>
+                                    <select id="variableDropdownGeral" class="form-select"></select>
+                                    <button id="insertVariableButton2" type="button" class="btn btn-primary mt-2">Insert
+                                        Variable</button>
+                                    <br/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" id="VariavelGeral" class="form-control"
+                                            placeholder="Variavel" aria-label="Variavel">
+                                    </div>
+
+                                </div>
+                                <div class="mb-3 ml-2 mr-2 pb-2 pt-2" id="InsertCardButton" type="button"
+                                    style="display: none;font-size: 18px;color: gray;background-color: #f0f0f0;border-radius: 5px;">
+                                    &nbsp;&nbsp;Adicionar Rich Card <span
+                                        style="border: 1px solid gray;border-radius: 20px;"
+                                        onclick="InsertCardButton()">&nbsp;+&nbsp;</span>
+
+                                </div>
+                                <!-- Remove Card 
+                                <div class="mb-3 ml-2 mr-2 pb-2 pt-2" id="RemoveCardButton" type="button"
+                                    style="display: none;font-size: 18px;color: gray;background-color: #f0f0f0;border-radius: 5px;">
+                                    &nbsp;&nbsp;Remove Rich Card <span
+                                        style="border: 1px solid gray;border-radius: 20px;"
+                                        onclick="RemoveCardButton()">&nbsp;-&nbsp;</span>
+                                </div>-->
+                                <!-- Input Card -->
+                                <div id="RichCardDiv" style="display: none;">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="row">
+                                                    <div class="mb-3">
+                                                        <label for="LinkColumn" class="form-label">Link image or video
+                                                            or audio</label>
+                                                        <input type="text" id="LinkColumn" onblur="link()"
+                                                            class="form-control" placeholder="Link" aria-label="Link">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="TitleColumn" class="form-label">Title</label>
+                                                        <input type="text" id="TitleColumn"
+                                                            onblur="TitleColumnFunction()" class="form-control"
+                                                            placeholder="Title" aria-label="Title">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="DescriptionColumn"
+                                                            class="form-label">Description</label>
+                                                        <textarea class="form-control"
+                                                            onblur="DescriptionColumnFunction()" id="DescriptionColumn"
+                                                            rows="3"></textarea>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <label for="" class="form-label">Botões</label>
+                                                        <div class="linkbody1">
+                                                            <div class="mb-3">
+                                                                <label for="LinkBotao" class="form-label">Link
+                                                                    Button</label>
+                                                                <input type="text" id="LinkBotao" class="form-control"
+                                                                    placeholder="Link Button" aria-label="Link Button">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="TextButton" class="form-label">Text
+                                                                    Button</label>
+                                                                <input type="text" id="TextButton"
+                                                                    onblur="TextButtonFunction()" class="form-control"
+                                                                    placeholder="Text Button" aria-label="Text Button">
+                                                            </div>
+                                                        </div>
+                                                        <!-- Add More Button-->
+                                                        <div class="mb-3">
+                                                            <a href="#" class="btn btn-secondary" id="btn2"
+                                                                onclick="moreButton()">Add Button</a>
+                                                        </div>
+                                                        <div class="linkbody2 mb-4" id="linkbody2"
+                                                            style="display: none;">
+                                                            <div class="mb-3" id="LinkBotao2">
+                                                                <label for="LinkBotao" class="form-label">Link Button
+                                                                    2</label>
+                                                                <input type="text" id="LinkBotao_input2"
+                                                                    class="form-control" placeholder="Link Button 2"
+                                                                    aria-label="Link Button 2">
+                                                            </div>
+                                                            <div class="mb-3 pb-2 mt-2" id="TextButton2">
+                                                                <label for="TextButton" class="form-label">Text Button
+                                                                    2</label>
+                                                                <input type="text" id="TextButton_input2"
+                                                                    onblur="TextButton2Function()" class="form-control"
+                                                                    placeholder="Text Button 2"
+                                                                    aria-label="Text Button 2">
+                                                            </div>
+                                                        </div>
+                                                        <!-- Remove Button-->
+                                                        <div class="" id="removebtn"
+                                                            style="display: none;margin-top: 10px;">
+                                                            <a href="#" class="btn btn-danger" id="removebtn"
+                                                                onclick="removeButton2()">Remove Button</a>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="card" style="width: 18rem;">
+                                                    <img class="card-img-top" id="img_card"
+                                                        src="https://img.freepik.com/vetores-premium/fundo-branco-de-tecnologia-de-internet-00702_660340-7.jpg"
+                                                        alt="Card image cap">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title" id="title_card">Card title</h5>
+                                                        <p class="card-text" id="Description_card">Some quick example
+                                                            text to build on the card title and make up the bulk of the
+                                                            card's content.</p>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <a href="#" class="btn btn-primary"
+                                                                    id="button1">somewhere</a>
+                                                            </div>
+                                                            <div class="col">
+                                                                <a href="#" class="btn btn-primary" id="button2"
+                                                                    style="display:none;">somewhere</a>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" id="salvarcard" style="display: none;">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 d-flex justify-content-center align-items-center">
+                                                <button id="SaveRichCard" type="button" style="display: block;"
+                                                    onclick="saveRichCard()" class="btn btn-primary mt-2">Save
+                                                    Card</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div id="step1" class="step">
-    <div id="glo-data-extension-warning" class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_large" role="alert">
-      <span class="slds-assistive-text">error</span>
-      <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Data extension not detected.">
-        <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
-        <use xlink:href="/svg/symbols.svg#error"></use>
-        </svg>
-      </span>
-      <h2>Data extension not detected. Please configure the data extension before configuring activity.
-      </h2>
-    </div>   
+    <script>
+        requirejs.config({
+            paths: {
+                postmonger: 'js/postmonger'
+            }
+        });
+        requirejs(['js/customActivity'], function (customActivity) { });
+    </script>
+    <script>
 
-    <form id="glo-send-test-sms-form">
-      <article class="slds-card">
-        <div class="slds-card__body slds-card__body_inner grid"> 
-          <div class="slds-form grid-item">
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-targetSystem-parameter">Destino da mensagem:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-targetSystem-parameter" class="slds-input slds-combobox__input">
-                </select>
-              </div>
-            </div>
-      
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-program-parameter">Namespace:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-program-parameter" class="slds-input slds-combobox__input">
-                </select>
-              </div>
-            </div>
+        // RCS Selector Type Message
+        function RCS_Type_Message() {
+            var from_value = document.querySelector('#FromColum').value;
+            if (from_value == "$_m-agent@rbm-sp-for-devs-basic-ld9khhv.iam.gserviceaccount.com") {
+                document.getElementById("Basic").style.display = 'block';
+                document.getElementById("Single").style.display = 'none';
 
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-subprogram-parameter">ElementName:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-subprogram-parameter" class="slds-input slds-combobox__input">
-                </select>
-              </div>
-            </div>
+            } else if (from_value == "rbm-agent@rbm-sp-for-devs-single-mqmb7ox.iam.gserviceaccount.com") {
+                document.getElementById("Basic").style.display = 'none';
+                document.getElementById("Single").style.display = 'block';
+            }
+        }
 
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-clientType-parameter">Tipo de Cliente:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-clientType-parameter" class="slds-input slds-combobox__input">
-                </select>
-              </div>
-            </div>
+        // RCS Single Types
+        function radiofunction() {
 
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-image-parameter">HSM possui imagem:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-image-parameter" class="slds-input slds-combobox__input">
-                    <option value="">Selecione a opção</option>
-                    <option value="True">Sim</option>
-                    <option value="False">Não</option>
-                </select>
-              </div>
-            </div>
+            var radio_value = document.querySelector('input[name="Message_Type"]:checked').value;
 
-            <div class="slds-form-element slds-form-element_stacked" id="glo-ImageLink-parameter">
-              <label class="slds-form-element__label" for="glo-ImageLink-parameter">Link da imagem</label>
-              <div class="slds-form-element__control">
-                <textarea id="glo-ImageLink-parameter" placeholder="URL da imagem" 
-                  class="slds-textarea" name="ImageLink-parameter"  rows="1" cols="10"></textarea>
-              </div>
-            </div>
+            if (radio_value == 'RichCard') {
+                document.getElementById("InsertCardButton").style.display = 'block';
+                document.getElementById("SimpleTextDiv").style.display = 'none';
+                
+                
+            } else {
+                document.getElementById("InsertCardButton").style.display = 'none';
+                document.getElementById('RichCardDiv').style.display = 'none';
 
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-dependentes-parameter">Possui informações de dependente:</label>
-              <div class="slds-form-element__control">
-                <select id="glo-dependentes-parameter" class="slds-input slds-combobox__input">
-                    <option value="">Selecione a opção</option>
-                    <option value="True">Sim</option>
-                    <option value="False">Não</option>
-                </select>
-              </div>
-            </div>
+                document.getElementById("SimpleTextDiv").style.display = 'block';
+            }
+        }
 
-            <div class="slds-form-element slds-form-element_stacked" id="glo-DEDependente-parameter">
-              <label class="slds-form-element__label" for="glo-DEDependente-parameter">DE dados dependentes</label>
-              <div class="slds-form-element__control">
-                <textarea id="glo-DEDependente-parameter" placeholder="Data Extension" 
-                  class="slds-textarea" name="DEDependente-parameter"  rows="1" cols="10"></textarea>
-              </div>
-            </div>
+        function InsertCardButton() {
+            document.getElementById('RichCardDiv').style.display = 'block';
+            document.getElementById('InsertCardButton').style.display = 'none';
+            document.getElementById("carousel").innerHTML = "";
+            document.getElementById('adcionar_var_rich').style.display = 'inline';
 
-            <div class="grid-item">
-            <div class="slds-form-element slds-form-element_stacked" id="glo-DEDependenteExternalKey-parameter">
-              <label class="slds-form-element__label" for="glo-DEDependenteExternalKey-parameter">External Key DE dados dependentes</label>
-              <div class="slds-form-element__control">
-                <textarea id="glo-DEDependenteExternalKey-parameter" placeholder="External Key" 
-                  class="slds-textarea" name="DEDependenteExternalKey-parameterr"  rows="1" cols="10"></textarea>
-              </div>
-            </div>
-            </div>
-       
-          </div>           
-          
-          <div class="slds-form grid-item" id="glo-parameter_container"></div>           
-        </div>           
-      </article>
-    </form>
-  </div>
+        }
 
-  <div id="step2" class="step">
-    <form id="glo-send-test-sms-form">
-      <article class="slds-card">
+        function moreButton() {
+            document.getElementById('linkbody2').style.display = "inline";
+            document.getElementById('removebtn').style.display = "inline";
+            document.getElementById('button2').style.display = "inline";
 
-        <div class="slds-card__body slds-card__body_inner grid">
-          <div class="grid-item">
-            <div class="glo-placeholder">
-              <span>Variavéis suportadas:</span>
-              <div id="glo-placeholder-list" class="glo-placeholder-list"></div>
-            </div>
+            document.getElementById('btn2').style.display = "none";
+        }
 
-            <div class="glo-placeholderdep" id="glo-placeholderdep-listext">
-              <hr style="width:50%;text-align:left;margin-left:0">
-              <span>Variavéis para dependentes suportadas:</span>
-              <div id="glo-placeholderdep-list" class="glo-placeholderdep-list"></div>
-            </div>
-          </div>          
+        function removeButton2() {
+            document.getElementById('linkbody2').style.display = "none";
+            document.getElementById('removebtn').style.display = "none";
+            document.getElementById('button2').style.display = "none";
 
-          <div class="grid-item">            
-            <div class="slds-form-element slds-form-element_stacked">
-              <label class="slds-form-element__label" for="glo-message-template-input">HSM Variavéis do Titular (Colocar na mesma ordem em que aparecem  na mensagem)</label>
-              <div class="slds-form-element__control">
-                <textarea id="glo-message-template-input" placeholder="Variavéis da mensagem" 
-                  class="slds-textarea" name="message-template"  rows="10" cols="60"></textarea>
-              </div>
-            </div>
+            document.getElementById('LinkBotao_input2').value = "";
+            document.getElementById('TextButton_input2').value = "";
 
-            <div class="grid-item">            
-            <div class="slds-form-element slds-form-element_stacked" id="glo-script-template-input">
-              <label class="slds-form-element__label" for="glo-script-template-input">HSM Variavéis dos Dependentes (Colocar na mesma ordem em que aparecem  na mensagem)</label>
-              <div class="slds-form-element__control">
-                <textarea id="glo-script-template-input" placeholder="Variavéis para dependentes" 
-                  class="slds-textarea" name="script-template"  rows="10" cols="60"></textarea>
-              </div>
-            </div>
+            document.getElementById('btn2').style.display = "inline";
+        }
 
-          </div>            
-        </div>    
-      </article>
-    </form>
-  </div>
+        // RichCard
+        var lista = []
+        function link() {
+            var url = document.getElementById('LinkColumn').value;
 
-  <div id="step3" class="step">
-    <h3>Setup complete!</h3>
-  </div>
+            document.getElementById('img_card').src = url;
+
+        }
+        function TitleColumnFunction() {
+            var title_value = document.getElementById('TitleColumn').value;
+            var titleColum = document.getElementById('title_card')
+            clear(titleColum);
+            titleColum.innerHTML = title_value;
+
+        }
+
+        function DescriptionColumnFunction() {
+            var Description_value = document.getElementById('DescriptionColumn').value;
+            var DescriptionColum = document.getElementById('Description_card')
+            clear(DescriptionColum);
+            DescriptionColum.innerHTML = Description_value;
+
+
+        }
+        function TextButtonFunction() {
+            var Button_value = document.getElementById('TextButton').value;
+            var ButtonColumn = document.getElementById('button1')
+            clear(ButtonColumn);
+            ButtonColumn.innerHTML = Button_value;
+        }
+        function TextButton2Function() {
+            var Button_value = document.getElementById('TextButton_input2').value;
+            var ButtonColumn = document.getElementById('button2')
+            clear(ButtonColumn);
+            ButtonColumn.innerHTML = Button_value;
+        }
+        var listaJSON = []
+        var dados = {}
+        function saveRichCard() {
+
+            var url_img = document.getElementById('LinkColumn').value;
+            var title_value = document.getElementById('TitleColumn').value;
+            var Description_value = document.getElementById('DescriptionColumn').value;
+            var Button_value = document.getElementById('TextButton').value;
+            var Link_Button_value = document.getElementById('LinkBotao').value;
+            var Button2_value = document.getElementById('TextButton_input2').value;
+            var Link_Button2_value = document.getElementById('LinkBotao_input2').value;
+
+            // Criar um objeto com os valores
+            var cardObject = {
+                Url_Imagem: url_img,
+                Titulo_Card: title_value,
+                Descriptio_Card: Description_value,
+                Button_Text: Button_value,
+                LinkButton: Link_Button_value,
+                Button2_Text: Button2_value,
+                LinkButton2: Link_Button2_value,
+
+            };
+            //Limpar lista
+            listaJSON = []
+            // Adicionar o objeto à lista
+            lista.push(cardObject);
+
+            // Atualizar a string JSON diretamente, se necessário
+            listaJSON = JSON.stringify(lista);
+
+            // Atualizar o valor do input com a string JSON 
+            document.getElementById('salvarcard').value = listaJSON;
+
+            // Converter o JSON de volta para um objeto JavaScript
+            dados = JSON.parse(listaJSON);
+
+            // Referência ao elemento do carrossel
+            var carousel = document.getElementById('carousel');
+
+            // Limpar Carrossel
+            carousel.innerHTML = "";
+            // Construir o HTML do carrossel com base nos dados
+            var id = 0
+            dados.forEach(item => {
+                if (item.LinkButton2 === undefined || item.LinkButton2 === null || item.LinkButton2 === '') {
+                    var itemHTML = `
+                    <div class="col d-flex justify-content-center align-items-center" id="remover_card_${id}">
+                    <div class="card mb-2" style="width: 18rem;">
+                        <div class="div" style="text-align: right;padding-right: 10px;"><span class="close-btn" id="remover_botao_${id}" onclick="RemoveCardButton(${id})">&times;</span></div>
+                        <div class="imgcard">
+                            <img class="card-img-top" id="img_card_${id}"src="${item.Url_Imagem}" alt="Card image cap">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="title_card_${id}">${item.Titulo_Card}</h5>
+                            
+                            <p class="card-text" id="Description_card_${id}">${item.Descriptio_Card}</p>
+                            <div class="row">
+                                <div class="col">
+                                    <a href="${item.LinkButton}" class="btn btn-primary" id="button1_${id}">${item.Button_Text}</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 3px;">
+                </div>
+                
+                `;
+                } else {
+                    var itemHTML = `
+                    <div class="col d-flex justify-content-center align-items-center" id="remover_card_${id}">
+                    <div class="card mb-2" style="width: 18rem;">
+                        <div class="div" style="text-align: right;padding-right: 10px;"><span class="close-btn" id="remover_botao_${id}" onclick="RemoveCardButton(${id})" >&times;</span></div>
+                        <div class="imgcard">
+                            <img class="card-img-top" id="img_card_${id}"src="${item.Url_Imagem}" alt="Card image cap">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="title_card_${id}">${item.Titulo_Card}</h5>
+                            
+                            <p class="card-text" id="Description_card_${id}">${item.Descriptio_Card}</p>
+                            <div class="row">
+                                <div class="col">
+                                    <a href="${item.LinkButton}" class="btn btn-primary" id="button1_${id}">${item.Button_Text}</a>
+                                </div>
+                                <div class="col">
+                                    <a href="${item.LinkButton2}" class="btn btn-primary" id="button2_${id}">${item.Button2_Text}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 3px;">
+                </div>               
+                `;
+                }
+
+
+                carousel.innerHTML += itemHTML;
+                //add more card
+                document.getElementById('InsertCardButton').style.display = 'block';
+
+
+                // clear 
+                document.getElementById('RichCardDiv').style.display = "none";
+                document.getElementById('LinkColumn').value = "";
+                document.getElementById('TitleColumn').value = "";
+                document.getElementById('DescriptionColumn').value = "";
+                document.getElementById('LinkBotao').value = "";
+                document.getElementById('TextButton').value = "";
+
+                // Remove Card
+                id = + 1
+                document.getElementById('adcionar_var_rich').style.display = 'none';
+            });
+
+        }
+        // Remove Rich Card
+        function RemoveCardButton(num) {
+            var carddd = document.getElementById('remover_card_' + num)
+            document.getElementById('RichCardDiv').style.display = 'none';
+            document.getElementById('InsertCardButton').style.display = 'block';
+            carddd.parentNode.removeChild(carddd);
+            lista.splice(num, 1);
+            listaJSON = JSON.stringify(lista);
+            document.getElementById('salvarcard').value = listaJSON;
+            document.getElementById('adcionar_var_rich').style.display = 'none';
+
+
+
+
+        };
+
+
+
+
+
+
+
+        function clear(valor) {
+            valor.innerHTML = "";
+        }
+
+    </script>
 </body>
-</html>
